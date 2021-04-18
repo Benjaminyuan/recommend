@@ -69,6 +69,8 @@ class Data(object):
                         # self.R[uid, i] = 1.
                         if uid == 1:
                             print("item:%d,score: %f" % (i, scores[uid][i]))
+                        if scores[uid][i] < 0.001:
+                            continue
                         self.R[uid, i] = scores[uid][i]
 
                     self.train_items[uid] = train_items

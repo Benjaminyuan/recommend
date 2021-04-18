@@ -7,7 +7,7 @@ from utils.common import *
 
 class GowallaParser(object):
     def __init__(self, path, frac):
-        self.df = pd.read_csv("/Users/benji/Documents/毕设/projects/Recommend/data/gowalla/Gowalla_totalCheckins.txt", sep="\t", header=None, names=[
+        self.df = pd.read_csv("./data/gowalla/Gowalla_totalCheckins.txt", sep="\t", header=None, names=[
                               "uid", "date", "latitude", "longitude", "location_id"])
         self.frac = frac
         self.path = "./data/gowalla/"
