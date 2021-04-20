@@ -25,7 +25,13 @@ def train():
     #              args)
     # for gpu
     model = NGCF(data_generator.n_users, data_generator.n_items,
-                 norm_adj, args).to(args.device)
+                 norm_adj, args)
+    if args.pretrain == -1:
+        print("load data---")
+        model.load_state_dict(torch.load("./model/599.pkl"))
+        model.eval()
+    
+    model = model.to(args.device)
 
     t0 = time()
 
@@ -109,9 +115,9 @@ def train():
         # save the user & item embeddings for pretraining.
         if ret['recall'][0] == cur_best_pre_0 and args.save_flag == 1:
             torch.save(model.state_dict(),
-                       args.weights_path + str(epoch) + '.pkl')
+                       args.weights_path + str(epoch) + args.dataset+"_"+str(args.use_score) + '.pkl')
             print('save the weights in path: ',
-                  args.weights_path + str(epoch) + args.dataset + '.pkl')
+                        args.weights_path + str(epoch) + args.dataset+"_"+str(args.use_score) + '.pkl')
 
     recs = np.array(rec_loger)
     pres = np.array(pre_loger)

@@ -7,10 +7,10 @@ import pickle
 
 
 class Data(object):
-    def __init__(self, path, batch_size):
+    def __init__(self, path, batch_size,use_score):
         self.path = path
         self.batch_size = batch_size
-
+        self.use_score = use_score
         train_file = path + '/train.txt'
         test_file = path + '/test.txt'
 
@@ -66,12 +66,15 @@ class Data(object):
                     #     self.R[uid, i] = val + 0.0
                     # self.R[uid][i] = 1
                     for i in train_items:
-                        # self.R[uid, i] = 1.
-                        if uid == 1:
-                            print("item:%d,score: %f" % (i, scores[uid][i]))
-                        if scores[uid][i] < 0.001:
-                            continue
-                        self.R[uid, i] = scores[uid][i]
+                        if self.use_score == 1:
+                            if uid == 1:
+                                print("item:%d,score: %f" % (i, scores[uid][i]))
+                            # if scores[uid][i] < 0.001:
+                            #     continue
+                            self.R[uid, i] = scores[uid][i]
+                        else:
+                            self.R[uid, i] = 1.
+
 
                     self.train_items[uid] = train_items
 

@@ -34,7 +34,7 @@ class GowallaParser(object):
         print("group-----")
         for idx, row in data.iterrows():
             userID = row["uid"]
-            if userID == 4000:
+            if userID == 2500:
                 break
             if userID not in user_item_map:
                 user_item_map[userID] = []

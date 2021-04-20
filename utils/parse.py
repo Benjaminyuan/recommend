@@ -10,6 +10,21 @@ from utils.common import *
 month_dict = dict((v, k) for k, v in enumerate(calendar.month_abbr))
 
 
+def get_strline_out(str_list):
+    return ' '.join([str(x) for x in str_list]) + '\n'
+
+
+def get_words(words_str):
+    words = words_str[1:-1].split(',')[:-1]
+    return [x.replace(' ', '') for x in words]
+
+
+def write_in_file(f_out_path, str_out):
+    f_out = open(f_out_path, 'w')
+    f_out.write(str_out)
+    f_out.close()
+
+
 class GMTTimer(object):
 
     def __init__(self, time_str):
@@ -155,7 +170,8 @@ class FourSquareDataSet(object):
             userID = row["userID"]
             if userID not in user_item_map:
                 user_item_map[userID] = []
-            user_item_map[userID].append([row['Time(GMT)'], row["VenueId"]])
+            user_item_map[userID].append(
+                [row['Time(GMT)'], row["VenueId"], row["VenueCategory"]])
         # 去除 数据集合小于 10 的 数据行，同时对 uid进行重新map
         filter_user_map = {}
 
@@ -168,7 +184,7 @@ class FourSquareDataSet(object):
                     id_map[item[1]] = idIdx
                     venue_id_map[idIdx] = [item[1]]
                     idIdx += 1
-                r.append([item[0], id_map[item[1]]])
+                r.append([item[0], id_map[item[1]], item[2]])
             filter_user_map[uid_idx] = r
             uid_map[uid_idx] = [uid]
             uid_idx += 1
@@ -177,11 +193,15 @@ class FourSquareDataSet(object):
         print("split-----")
         train_map, test_map = {}, {}
         train_map_item = {}
+        poi_c = {}
         for k, l in filter_user_map.items():
             train, test = self.split(l)
             train_map_item[k] = train
             train_map[k] = [l[1] for l in train]
             test_map[k] = [l[1] for l in test]
+            # poi - c
+            for item in train:
+                poi_c[item[1]] = item[2]
         self.write_map(train_map, "train")
         self.write_map(test_map, "test")
         self.write_map(uid_map, "uid")
@@ -213,6 +233,36 @@ class FourSquareDataSet(object):
                     train_score[uid][his[1]] += factor
         with open(self.path + "scores.pkl", "wb") as f:
             pickle.dump(train_score, f, pickle.HIGHEST_PROTOCOL)
+
+        # 计算poi-category的映射
+        print('poi_word_gen----')
+        data = poi_c
+        length = len(data)
+        poi_word_tf_dict = {}
+        word_numinpoi_dict = {}
+        for poiID, cate in data.items():
+            words = get_words(cate)
+            words_length = len(words)
+            for word in words:
+                if poiID not in poi_word_tf_dict:
+                    poi_word_tf_dict[poiID] = {word: 1/words_length}
+                else:
+                    if word not in poi_word_tf_dict[poiID]:
+                        poi_word_tf_dict[poiID][word] = 1/words_length
+                    else:
+                        print('poi_word_gen错误(poiID,word)', poiID, word)
+                if word not in word_numinpoi_dict:
+                    word_numinpoi_dict[word] = 1
+                else:
+                    word_numinpoi_dict[word] += 1
+        str_out = ''
+        for poiID, value in poi_word_tf_dict.items():
+            for word, tf in poi_word_tf_dict[poiID].items():
+                str_out += get_strline_out([poiID, word, tf *
+                                           math.log(length/(word_numinpoi_dict[word]+1))])
+                str_out += get_strline_out([word, poiID, tf *
+                                           math.log(length/(word_numinpoi_dict[word]+1))])
+        write_in_file('./data/square/net_POI_word.txt', str_out)
         return train_score
 
     def split(self, all_list, ratio=0.2):

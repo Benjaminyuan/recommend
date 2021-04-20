@@ -1,7 +1,7 @@
 from utils.parse import *
 from utils.gowalla import *
 
-gowalla_path = "/Users/benji/Documents/毕设/projects/Recommend/data/gowalla/Gowalla_totalCheckins.txt"
+gowalla_path = "../Recommend/data/gowalla/Gowalla_totalCheckins.txt"
 
 
 def TestFourSquare():
