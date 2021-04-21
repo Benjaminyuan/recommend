@@ -30,28 +30,34 @@ def train():
         print("load data---")
         model.load_state_dict(torch.load("./model/599.pkl"))
         model.eval()
-    
-    model = model.to(args.device)
 
-    t0 = time()
 
-    # 训练模型
+<< << << < HEAD
 
-    cur_best_pre_0, stopping_step = 0, 0
-    """
+== == == =
+
+>>>>>> > rebase
+model = model.to(args.device)
+
+t0 = time()
+
+# 训练模型
+
+cur_best_pre_0, stopping_step = 0, 0
+"""
     Parameters 是 Variable 的子类。Paramenters和Modules一起使用的时候会有一些特殊的属性，
     即：当Paramenters赋值给Module的属性的时候，他会自动的被加到 Module的 参数列表中(即：会出现在 parameters() 迭代器中)。
-    将Varibale赋值给Module属性则不会有这样的影响。 
-    这样做的原因是：我们有时候会需要缓存一些临时的状态(state), 
+    将Varibale赋值给Module属性则不会有这样的影响。
+    这样做的原因是：我们有时候会需要缓存一些临时的状态(state),
     比如：模型中RNN的最后一个隐状态。如果没有Parameter这个类的话，
     那么这些临时变量也会注册成为模型变量。
     """
-    # lr = learn rate 学习速率
-    optimizer = optim.Adam(model.parameters(), lr=args.lr)
+ # lr = learn rate 学习速率
+ optimizer = optim.Adam(model.parameters(), lr=args.lr)
 
-    loss_loger, pre_loger, rec_loger, ndcg_loger, hit_loger = [], [], [], [], []
+  loss_loger, pre_loger, rec_loger, ndcg_loger, hit_loger = [], [], [], [], []
 
-    for epoch in range(args.epoch):
+   for epoch in range(args.epoch):
         t1 = time()
         loss, mf_loss, emb_loss = 0., 0., 0.
         # 计算需要训练的批数
@@ -117,8 +123,7 @@ def train():
             torch.save(model.state_dict(),
                        args.weights_path + str(epoch) + args.dataset+"_"+str(args.use_score) + '.pkl')
             print('save the weights in path: ',
-                        args.weights_path + str(epoch) + args.dataset+"_"+str(args.use_score) + '.pkl')
-
+                  args.weights_path + str(epoch) + args.dataset+"_"+str(args.use_score) + '.pkl')
     recs = np.array(rec_loger)
     pres = np.array(pre_loger)
     ndcgs = np.array(ndcg_loger)

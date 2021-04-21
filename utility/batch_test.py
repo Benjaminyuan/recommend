@@ -17,7 +17,7 @@ args = parse_args()
 Ks = eval(args.Ks)
 
 data_generator = Data(path=args.data_path + args.dataset,
-                      batch_size=args.batch_size,use_score=args.use_score)
+                      batch_size=args.batch_size, use_score=args.use_score)
 USR_NUM, ITEM_NUM = data_generator.n_users, data_generator.n_items
 N_TRAIN, N_TEST = data_generator.n_train, data_generator.n_test
 BATCH_SIZE = args.batch_size
@@ -166,6 +166,7 @@ def test(model, users_to_test, drop_flag=False, batch_test_flag=False):
                                                                   item_batch,
                                                                   [],
                                                                   drop_flag=True)
+                    # TODO: 可以换一个计算嵌入的方式
                     i_rate_batch = model.rating(
                         u_g_embeddings, pos_i_g_embeddings).detach().cpu()
 

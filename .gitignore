@@ -3,4 +3,6 @@
 *.log
 /data
 */__pycache__/
-*.pkl
+*/windows/*
+*.exe
+*.txt

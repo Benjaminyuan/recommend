@@ -19,4 +19,4 @@ def TestGowalla():
 
 if __name__ == "__main__":
     TestFourSquare()
-    TestGowalla()
+    # TestGowalla()
